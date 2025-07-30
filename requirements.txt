@@ -1,0 +1,12 @@
+Django>=4.2
+djangorestframework
+djangorestframework-simplejwt
+psycopg2-binary
+gunicorn
+pandas
+openpyxl
+PyMuPDF 
+pytesseract 
+pillow 
+pdf2image
+django-cors-headers
