@@ -20,6 +20,7 @@ import pytesseract
 import re
 from django.utils import timezone
 
+from django.core.mail import EmailMultiAlternatives
 
 
 
@@ -131,19 +132,55 @@ class EmployeeViewSet(viewsets.ModelViewSet):
                 file.seek(0)
                 pdf_bytes = file.read()
 
-                email = EmailMessage(
+                html_message = f"""
+                <html>
+                <body style="font-family: 'Segoe UI', Arial, sans-serif; background: #f7f9fa; margin:0; padding:0;">
+                    <table width="100%" bgcolor="#f7f9fa" style="padding: 40px 0;">
+                    <tr>
+                        <td align="center">
+                        <table width="450" bgcolor="#fff" style="border-radius:14px;box-shadow:0 2px 16px #00000010;overflow:hidden">
+                            <tr>
+                            <td align="center" style="padding:28px 28px 0 28px;">
+                                <img src="https://camusat.com/wp-content/uploads/2023/01/logo-camusat.svg" alt="Camusat" style="height:48px;margin-bottom:12px;" />
+                                <h2 style="color:#174189;letter-spacing:1px;margin-bottom:10px;">Votre bulletin de salaire</h2>
+                                <p style="color:#223243;font-size:15px;line-height:1.7;margin:10px 0 24px 0;">
+                                Bonjour <b>{employee.prenom} {employee.nom}</b>,<br>
+                                Veuillez trouver ci-joint votre <b>bulletin de salaire</b> du mois en cours.<br>
+                                <span style="color:#747c8a;">(Ce document est confidentiel.)</span>
+                                </p>
+                                <a href="#" style="display:inline-block;margin-bottom:22px;padding:12px 28px;background:#174189;color:white;text-decoration:none;border-radius:8px;font-weight:500;letter-spacing:0.5px;font-size:15px;">
+                                Télécharger mon bulletin
+                                </a>
+                                <div style="font-size:13px;color:#aaa;margin-bottom:6px;">
+                                <b>Camusat Sénégal</b><br>
+                                Service RH — {timezone.now().strftime('%B %Y')}
+                                </div>
+                                <div style="color:#aaa;font-size:12px;margin-top:14px;">
+                                Ceci est un message automatique, merci de ne pas répondre directement à cet e-mail.
+                                </div>
+                            </td>
+                            </tr>
+                        </table>
+                        </td>
+                    </tr>
+                    </table>
+                </body>
+                </html>
+                """
+
+                email = EmailMultiAlternatives(
                     subject="Votre bulletin de salaire",
-                    body="Bonjour, veuillez trouver votre bulletin en pièce jointe.",
+                    body="Bonjour, veuillez trouver votre bulletin de salaire en pièce jointe.",
                     from_email="mombaye@camusat.com",
                     to=[employee.email]
                 )
                 email.attach(f"bulletin_{matricule}.pdf", pdf_bytes, "application/pdf")
+                email.attach_alternative(html_message, "text/html")
 
                 try:
                     email.send()
                     BulletinEnvoiLog.objects.create(matricule=matricule, email=employee.email, statut="succès")
                 except Exception as e:
-                
                     BulletinEnvoiLog.objects.create(matricule=matricule, email=employee.email, statut="échec", message=str(e))
 
             return Response({"message": "Traitement terminé (OCR)."})
