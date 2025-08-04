@@ -155,8 +155,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "mail.camusat.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "mombaye@camusat.com"
-EMAIL_HOST_PASSWORD = "Mu$T@pH2103@2025"
+EMAIL_HOST_USER = "rh.senegal@camusat.com"
+EMAIL_HOST_PASSWORD = "RhCamusat2025$@" #"Mu$T@pH2103@2025"
 
 
 # Password validation
@@ -199,3 +199,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BULLETIN_DIR = os.path.join(BASE_DIR, "data", "bulletins")

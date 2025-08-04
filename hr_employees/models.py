@@ -28,9 +28,10 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.nom} {self.prenom}"
-
+    
 
 class BulletinEnvoiLog(models.Model):
+    employees_id = models.BigIntegerField(null=True, blank=True)
     matricule = models.CharField(max_length=100)
     email = models.EmailField(null=True, blank=True)
     statut = models.CharField(max_length=50)  # "succès", "échec", etc.
